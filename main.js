@@ -363,7 +363,7 @@ class ImageBuilder {
 		this.data = {};
 		this.isLoading = false;
 		const inputSize = v.gid(sizeId);
-		inputSize.value = 768;
+		inputSize.value = 900;
 		v.ael(fileId, 'change', async (event) => {
 			this.isLoading = true;
 			const { b64d, file } = await FL.l(event);
@@ -393,7 +393,7 @@ class ImageBuilder {
 		}
 	}
 	async f2is(fileId, imageids, fileName, size) {
-		const MaxPixcelParImg = isNaN((size + '') * 1) ? 768 : size * 1;
+		const MaxPixcelParImg = isNaN((size + '') * 1) ? 900 : size * 1;
 		const MAX_bytes4 = MaxPixcelParImg * MaxPixcelParImg * 4;
 		const MAX_bytes3 = MaxPixcelParImg * MaxPixcelParImg * 3;
 		const dataUri = this.data[fileId];
