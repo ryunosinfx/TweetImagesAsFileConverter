@@ -1,0 +1,100 @@
+html,
+body {
+	height: 100%;
+	padding: 0;
+	margin: 0;
+}
+div,
+h1,
+h2 {
+	padding: 0;
+	margin: 0;
+	box-sizing: content-box;
+}
+div.container {
+	background-color: aliceblue;
+	padding: 1em;
+	height: calc(100% - 2em);
+}
+div.header {
+	background-color: antiquewhite;
+	padding: 0.5em;
+}
+div.body {
+	background-color: aquamarine;
+	padding: 0.5em;
+}
+div.tabhead {
+	background-color: cyan;
+	display: flex;
+	line-height: 2em;
+}
+div.tabhead .tab {
+	background-color: deepskyblue;
+	display: flex;
+	line-height: 2em;
+	padding: 0.2em 1em;
+	border-radius: 0.3em 0.3em 0 0;
+	margin-right: 0.2em;
+	cursor: pointer;
+}
+
+div.tabhead .tab.selected {
+	font-size: 110%;
+	font-weight: bold;
+	background-color: dodgerblue;
+}
+div.tabbody {
+	background-color: darkturquoise;
+}
+div.tabbody .tb {
+	padding: 0.5em;
+	display: none;
+}
+div.tabbody .tb.selected {
+	display: block;
+}
+div.tabbody .tb .form div.row {
+	width: 100%;
+	padding: 0.5em;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: space-around;
+}
+.item {
+	padding: 0.5em;
+	min-width: calc(1100 / 4) px;
+	background-color: lightcyan;
+	margin-bottom: 0.1em;
+}
+.col {
+	text-align: center;
+}
+.col.title {
+	font-weight: bold;
+	background-color: lightskyblue;
+}
+.col img {
+	display: inline-block;
+	width: 255px;
+	height: 255px;
+	background-color: white;
+}
+.col.dl img {
+	cursor: pointer;
+}
+h1 {
+	padding: 0.5em;
+	line-height: 1em;
+}
+.selected {
+	display: block;
+}
+a.dlLinkAncker {
+	position: absolute;
+	top: -10em;
+}
+canvas {
+	display: none;
+}

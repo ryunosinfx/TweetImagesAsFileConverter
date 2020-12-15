@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ja">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=480,initial-scale=1.5" />
+        <link rel="stylesheet" type="text/css" href="main.css">
+		<title>TweetImagesAsFileConverter</title>
+	</head>
+	<body>
+        <div class="container">
+            <div class="header">
+                <h1>TweetImagesAsFileConverter</h1>
+            </div>
+
+            <div class="body">
+                <div class="tabhead">
+                    <div class="tab selected" id="toFile">To File</div> 
+                    <div class="tab" id="toImage">To Images</div> 
+                </div> 
+                <div class="tabbody">
+                    <div class="tb selected" id="toFileBody">
+                        <h2>To File</h2>
+                        <div class="form">
+                            <div class="row">
+                                <div class="item">
+                                    <div class="col title">image1:</div>
+                                    <div class="col"><input type="file" id="image1File"/></div>
+                                    <div class="col"><img alt="image1"  id="image1"/></div>
+                                </div>
+                                <div class="item">
+                                    <div class="col title">image2:</div>
+                                    <div class="col"><input type="file" id="image2File"/></div>
+                                    <div class="col"><img alt="image2" id="image2"/></div>
+                                </div>
+                                <div class="item">
+                                    <div class="col title">image3:</div>
+                                    <div class="col"><input type="file" id="image3File"/></div>
+                                    <div class="col"><img alt="image3" id="image3"/></div>
+                                </div>
+                                <div class="item">
+                                    <div class="col title">image4:</div>
+                                    <div class="col"><input type="file" id="image4File"/></div>
+                                    <div class="col"><img alt="image4" id="image4"/></div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col" id="FileClear"/><button >clear</button></div>
+                                <div class="col" id="FileOutput"/><button >convertToFile</button></div>
+                            </div>
+                        </div>
+                    </div> 
+                    <div class="tb" id="toImageBody">
+                        <h2>To Images</h2>
+                        <div class="form">
+                            <div class="row">
+                                <div class="col">File:</div>
+                                <div class="col"><input type="file" id="FileInput"/></div>
+                            </div>
+                            <div class="row">
+                                <div class="item">
+                                    <div class="col title">image1result:</div>
+                                    <div class="col dl"><img alt="image1result" id="image1result"/></div>
+                                </div>
+                                <div class="item">
+                                    <div class="col title">image2result:</div>
+                                    <div class="col dl"><img alt="image2result" id="image2result"/></div>
+                                </div>
+                                <div class="item">
+                                    <div class="col title">image3result:</div>
+                                    <div class="col dl"><img alt="image3result" id="image3result"/></div>
+                                </div>
+                                <div class="item">
+                                    <div class="col title">image4result:</div>
+                                    <div class="col dl"><img alt="image4result" id="image4result"/></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
+                </div> 
+            </div>
+            <div class="footer"></div>
+            <a class="dlLinkAncker" id="dlLinkAncker"><dlLinkAncker/a>
+        </div>
+		<script src="./main.js"></script>
+		<script >
+        </script>
+	</body>
+</html>
