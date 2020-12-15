@@ -318,17 +318,15 @@ class ImageProcessor {
 	}
 }
 const ip = new ImageProcessor();
-const MaxPixcelParImg = 1100;
-const MAX_bytes4 = MaxPixcelParImg * MaxPixcelParImg * 4;
-const MAX_bytes3 = MaxPixcelParImg * MaxPixcelParImg * 3;
 const COMMA = ',';
 const COMMA_I = te.encode(COMMA)[0];
 const OPT_PNG = { type: 'image/png' };
 class View {
-	constructor(tabIds) {
+	constructor(tabIds, loadingId) {
 		for (let tabId of tabIds) {
 			v.ael(tabId, 'click', this.showTab(tabId, tabIds));
 		}
+		this.loading = v.gid(loadingId);
 	}
 	showTab(selectTabId, tabIds) {
 		const suffix = 'Body';
@@ -357,16 +355,21 @@ class View {
 			elmSelected.classList.add(cn);
 		}
 	}
+	showLoadling() {}
+	heideLoading() {}
 }
 class ImageBuilder {
-	constructor(fileId, imageids) {
+	constructor(fileId, imageids, sizeId) {
 		this.data = {};
 		this.isLoading = false;
+		const inputSize = v.gid(sizeId);
+		inputSize.value = 768;
 		v.ael(fileId, 'change', async (event) => {
 			this.isLoading = true;
 			const { b64d, file } = await FL.l(event);
 			this.data[fileId] = b64d;
-			this.f2is(fileId, imageids, file.name);
+			const inputSize = v.gid(sizeId);
+			this.f2is(fileId, imageids, file.name, inputSize.value);
 			this.isLoading = false;
 		});
 		for (let imageid of imageids) {
@@ -389,16 +392,20 @@ class ImageBuilder {
 			imgElm.src = '';
 		}
 	}
-	async f2is(fileId, imageids, fileName) {
+	async f2is(fileId, imageids, fileName, size) {
+		const MaxPixcelParImg = isNaN((size + '') * 1) ? 768 : size * 1;
+		const MAX_bytes4 = MaxPixcelParImg * MaxPixcelParImg * 4;
+		const MAX_bytes3 = MaxPixcelParImg * MaxPixcelParImg * 3;
 		const dataUri = this.data[fileId];
 		this.fileName = fileName;
 		const fnb64 = Base64Util.to64(fileName);
 		const dataAll = [fnb64, dataUri].join(COMMA);
 		const len = dataAll.length;
 		if (len / 4 > MAX_bytes3 - 4) {
-			alert('too fat data!');
+			alert('too fat data! dataSize:' + len + '/allowSize:' + (MAX_bytes3 - 4) * 4 + '/pixcel:' + size);
 			return;
 		}
+		console.log('jast dataSize:' + len + '/allowSize:' + (MAX_bytes3 - 4) * 4 + '/pixcel:' + size);
 		const lenWithHole = len + 4 * 4;
 		const count = Math.ceil(lenWithHole / MAX_bytes3);
 		this.init(imageids);
@@ -530,8 +537,9 @@ class FileBuilder {
 const tabIds = ['toFile', 'toImage'];
 new View(tabIds);
 const fileId = 'FileInput';
+const sizeId = 'sizeInput';
 const outputImageids = ['image1result', 'image2result', 'image3result', 'image4result'];
-new ImageBuilder(fileId, outputImageids);
+new ImageBuilder(fileId, outputImageids, sizeId);
 const fileIds = ['image1File', 'image2File', 'image3File', 'image4File'];
 const inputViewImageids = ['image1', 'image2', 'image3', 'image4'];
 const buttonId = 'FileOutput';

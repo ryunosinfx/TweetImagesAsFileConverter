@@ -6,7 +6,7 @@ This tool intend to exchange file on Twitter in 1 tweet with 4 images.
 
 To work you need to prepare ES2017 SuportBlowser(Chromium,Chrome,Firefox,etc)
 
-You can convert a file(max 9.9MB) to images (1100*1100 px png max 4files).
+You can convert a file(max 6.9MB) to images (900*900 px png max 4files).
 And you can convert these images to the file.
 
 ## Make Images to Tweet on Twitter
@@ -34,11 +34,11 @@ https://ryunosinfx.github.io/TweetImagesAsFileConverter/index.html
    * file -> dataUriScheme
    * fileName->fileName@base64
    * fileName@base64+','+dataUriScheme -> uint8array
-   * uint8array is split max 4 image files -> 1100*1100 pixel(first pixcel is 0,0,0,0. use RGB,not use alpha channel. and padding ","=44)
+   * uint8array is split max 4 image files -> 900*900 pixel(first pixcel is 0,0,0,0. use RGB,not use alpha channel. and padding ","=44)
    
  * to File
    * images -> dataUriScheme
-   * dataUriScheme -> Bitmap data (1100*1100 pixel,first pixcel is 0,0,0,0. use RGB,not use alpha channel)
+   * dataUriScheme -> Bitmap data (900*900 pixel,first pixcel is 0,0,0,0. use RGB,not use alpha channel)
    * Bitmap data -> uint8array(filter only RGB pixels only)
    * uint8arrays join -> all uint8array
    * all uint8array -> string(filename & dataUri)
