@@ -391,7 +391,7 @@ class ImageBuilder {
 			if (b64d) {
 				this.data[fileId] = b64d;
 				const inputSize = v.gid(sizeId);
-				this.f2is(fileId, imageids, file.name, inputSize.value);
+				await this.f2is(fileId, imageids, file.name, inputSize.value);
 			}
 			view.heideLoading();
 		});
