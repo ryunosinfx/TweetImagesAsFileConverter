@@ -433,9 +433,11 @@ class ImageBuilder {
 		const count = Math.ceil(lenWithHole / MAX_bytes3);
 		this.init(imageids);
 		const packLen = MAX_bytes3 - 3;
+		const promises = [];
+		const imageElms = [];
 		for (let i = 0; i < count; i++) {
 			const imageId = imageids[i];
-			const imgElm = v.gid(imageId);
+			imageElms.push(v.gid(imageId));
 			const start = i * packLen;
 			const end = start + packLen;
 			const sub = dataAll.substring(start, end);
@@ -465,7 +467,11 @@ class ImageBuilder {
 					a[j] = te.encode(char);
 				}
 			}
-			const duri = await ip.getUriFomBMD({ data: a, width: MaxPixcelParImg, height: MaxPixcelParImg });
+			promises.push(ip.getUriFomBMD({ data: a, width: MaxPixcelParImg, height: MaxPixcelParImg }));
+		}
+		const results = await Promise.all(promises);
+		for (let duri of results) {
+			const imgElm = imageElms.shift();
 			imgElm.src = duri;
 		}
 	}
