@@ -81,6 +81,10 @@ class FL {
 				},
 				false
 			);
+			if (!file) {
+				resolve({});
+				return;
+			}
 			fr.readAsDataURL(file);
 		};
 		return new Promise(f);
@@ -326,7 +330,7 @@ class View {
 		for (let tabId of tabIds) {
 			v.ael(tabId, 'click', this.showTab(tabId, tabIds));
 		}
-		this.loading = v.gid(loadingId);
+		this.loadingElm = v.gid(loadingId);
 	}
 	showTab(selectTabId, tabIds) {
 		const suffix = 'Body';
@@ -355,22 +359,41 @@ class View {
 			elmSelected.classList.add(cn);
 		}
 	}
-	showLoadling() {}
-	heideLoading() {}
+	showLoadling() {
+		console.log('showLoadling a ' + this.loadingElm);
+		this.loadingElm.classList.add('on');
+		console.log('showLoadling b ' + this.loadingElm.classList);
+	}
+	heideLoading() {
+		console.log('heideLoading a');
+		this.loadingElm.classList.remove('on');
+		console.log('heideLoading b');
+	}
 }
 class ImageBuilder {
-	constructor(fileId, imageids, sizeId) {
+	constructor(fileId, imageids, sizeId, sizeExpected, view) {
 		this.data = {};
 		this.isLoading = false;
 		const inputSize = v.gid(sizeId);
 		inputSize.value = 900;
+		const sizeFunc = (event) => {
+			const inputSize = event.target;
+			const size = inputSize.value;
+			const bits = (size * size * 3 - 3) * 3 - 280;
+			const sizeExpectedElm = v.gid(sizeExpected);
+			sizeExpectedElm.textContent = '' + bits.toLocaleString() + '';
+		};
+		sizeFunc({ target: inputSize });
+		v.ael(inputSize, 'input', sizeFunc);
 		v.ael(fileId, 'change', async (event) => {
-			this.isLoading = true;
+			view.showLoadling();
 			const { b64d, file } = await FL.l(event);
-			this.data[fileId] = b64d;
-			const inputSize = v.gid(sizeId);
-			this.f2is(fileId, imageids, file.name, inputSize.value);
-			this.isLoading = false;
+			if (b64d) {
+				this.data[fileId] = b64d;
+				const inputSize = v.gid(sizeId);
+				this.f2is(fileId, imageids, file.name, inputSize.value);
+			}
+			view.heideLoading();
 		});
 		for (let imageid of imageids) {
 			v.ael(imageid, 'click', async (event) => {
@@ -448,7 +471,7 @@ class ImageBuilder {
 	}
 }
 class FileBuilder {
-	constructor(fileIds, imageids, buttonId, clearButtonId) {
+	constructor(fileIds, imageids, buttonId, clearButtonId, view) {
 		this.data = {};
 		this.imageids = imageids;
 		this.fileIds = fileIds;
@@ -458,29 +481,29 @@ class FileBuilder {
 			const id = fileIds[i];
 			const imgElm = imageids[i] ? v.gid(imageids[i]) : null;
 			v.ael(id, 'change', async (event) => {
-				this.isLoading = true;
+				view.showLoadling();
 				const { b64d, file } = await FL.l(event);
 				this.data[id] = b64d;
 				if (imgElm) {
 					imgElm.src = b64d;
 				}
-				this.isLoading = false;
+				view.heideLoading();
 			});
 		}
 		v.ael(buttonId, 'click', async (event) => {
-			this.isLoading = true;
+			view.showLoadling();
 			try {
 				await this.bfDL();
 			} catch (e) {
 				console.error(e);
 				console.log(e.stack);
 			}
-			this.isLoading = false;
+			view.heideLoading();
 		});
 		v.ael(clearButtonId, 'click', async (event) => {
-			this.isLoading = true;
+			view.showLoadling();
 			await this.clear();
-			this.isLoading = false;
+			view.heideLoading();
 		});
 		this.clear();
 	}
@@ -504,8 +527,6 @@ class FileBuilder {
 				nU8a[k] = u8a[i];
 			}
 			u8as.push(nU8a.subarray(3));
-
-			console.log(new Uint8Array(ab).subarray(4));
 		}
 		const u8a = Base64Util.joinU8as(u8as);
 		// const str = Base64Util.u8a2bs(u8a);
@@ -535,13 +556,15 @@ class FileBuilder {
 	}
 }
 const tabIds = ['toFile', 'toImage'];
-new View(tabIds);
+const loadingId = 'loading';
+const view = new View(tabIds, loadingId);
 const fileId = 'FileInput';
 const sizeId = 'sizeInput';
+const sizeExpected = 'sizeExpected';
 const outputImageids = ['image1result', 'image2result', 'image3result', 'image4result'];
-new ImageBuilder(fileId, outputImageids, sizeId);
+new ImageBuilder(fileId, outputImageids, sizeId, sizeExpected, view);
 const fileIds = ['image1File', 'image2File', 'image3File', 'image4File'];
 const inputViewImageids = ['image1', 'image2', 'image3', 'image4'];
 const buttonId = 'FileOutput';
 const clearButtonId = 'FileClear';
-new FileBuilder(fileIds, inputViewImageids, buttonId, clearButtonId);
+new FileBuilder(fileIds, inputViewImageids, buttonId, clearButtonId, view);
