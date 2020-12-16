@@ -1,3 +1,9 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-feature-settings: 'palt';
+}
 html,
 body {
 	height: 100%;
@@ -12,18 +18,32 @@ h2 {
 	box-sizing: content-box;
 }
 h1 {
-	max-width: 100vw;
+	padding: 0 0.5em;
+	max-width: calc(100vw - 1em);
+	word-wrap: break-word;
+	letter-spacing: 1px;
+	line-height: 1em;
+}
+h2 {
+	padding: 0 0.5em;
 }
 div.container {
+	width: calc(100vw - 0em);
 	background-color: aliceblue;
 	padding: 0;
-	height: calc(100% - 2em);
+	height: calc(100vh - 0);
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	align-content: flex-start;
 }
 div.header {
+	width: calc(100vw - 0em);
 	background-color: antiquewhite;
 	padding: 0.5em;
 }
 div.body {
+	width: calc(100vw - 0em);
 	background-color: aquamarine;
 	padding: 0.5em;
 }
@@ -51,15 +71,15 @@ div.tabbody {
 	background-color: darkturquoise;
 }
 div.tabbody .tb {
-	padding: 0.5em;
+	padding: 0.5em 0;
 	display: none;
 }
 div.tabbody .tb.selected {
 	display: block;
 }
 div.tabbody .tb .form div.row {
-	width: 100%;
-	padding: 0.5em;
+	width: calc(100% - 0em);
+	padding: 0.5em 0;
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
@@ -68,11 +88,17 @@ div.tabbody .tb .form div.row {
 .item {
 	padding: 0.5em;
 	min-width: calc(1100 / 4) px;
-	background-color: lightcyan;
-	margin-bottom: 0.1em;
+	background-color: lightskyblue;
+	margin-bottom: 0em;
 }
 .col {
 	text-align: center;
+}
+.col.file {
+	width: 40vw;
+}
+.col.file input {
+	width: 40vw;
 }
 .col.title {
 	font-weight: bold;
@@ -80,16 +106,14 @@ div.tabbody .tb .form div.row {
 }
 .col img {
 	display: inline-block;
-	width: 255px;
-	height: 255px;
+	width: calc(50vw - 1.5em);
+	height: calc(50vw - 1.5em);
+	max-width: 900px;
+	max-height: 900px;
 	background-color: white;
 }
 .col.dl img {
 	cursor: pointer;
-}
-h1 {
-	padding: 0.5em;
-	line-height: 1em;
 }
 .selected {
 	display: block;
@@ -100,4 +124,8 @@ a.dlLinkAncker {
 }
 canvas {
 	display: none;
+}
+button {
+	padding: 1em;
+	min-width: 30vw;
 }
