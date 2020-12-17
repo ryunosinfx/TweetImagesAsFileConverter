@@ -173,6 +173,10 @@ class Base64Util {
 		}
 		return b;
 	}
+	static u8a2b64(u8a) {
+		const bs = Base64Util.u8a2bs(u8a);
+		return btoa(bs);
+	}
 	static s2u8a(s) {
 		const d = Base64Util.to64(s);
 		return Base64Util.b64ToU8a(d);
@@ -275,11 +279,12 @@ class Base64Util {
 const STHC = 10000;
 class Cryptor {
 	constructor() {}
-	static async getKey(pt, salt) {
-		console.log('getKey salt:' + salt + '/passphraseText:' + pt);
+	static async getKey(pt, saltB64) {
+		console.log('getKey salt:' + saltB64 + '/passphraseText:' + pt);
 		const digest = await Hasher.sha256(pt, STHC);
+		const salt = Base64Util.b64ToU8a(saltB64).buffer;
 		console.log('digest:' + digest);
-		const keyMaterial = await crypto.subtle.importKey('raw', digest, { name: 'PBKDF2' }, false, ['deriveKey']);
+		const keyMaterial = await crypto.subtle.importKey('raw', Base64Util.b64ToU8a(digest), { name: 'PBKDF2' }, false, ['deriveKey']);
 		console.log('keyMaterial:' + keyMaterial);
 		const key = await crypto.subtle.deriveKey(
 			{
@@ -296,10 +301,6 @@ class Cryptor {
 		console.log('key:' + key);
 		return [key, salt];
 	}
-	static getSalt(saltInput, isAB) {
-		const salt = saltInput ? (isAB ? new Uint8Array(saltInput) : Base64Util.s2u8a(saltInput)) : crypto.getRandomValues(new Uint8Array(16));
-		return salt;
-	}
 	static getFixedField() {
 		return crypto.getRandomValues(new Uint8Array(12));
 	}
@@ -311,50 +312,48 @@ class Cryptor {
 	}
 	static async encrypt(pt, dataU8a) {
 		const url = location.href.split(/\?#/g)[0];
-		const salt = await Hasher.sha512(url + pt);
-		const key = await Cryptor.getKey(pt, salt);
-		return await Cryptor.encodeAES256GCM(dataU8a, key, salt, true);
+		const saltB64 = await Hasher.sha512(url + pt);
+		const [key, salt] = await Cryptor.getKey(pt, saltB64);
+		return await Cryptor.encodeAES256GCM(dataU8a, key, salt);
 	}
-	static async encodeAES256GCM(inputU8a, passphraseTextOrKey, saltInput = null, isAB) {
-		const salt = Cryptor.getSalt(saltInput, isAB);
-		const key = await Cryptor.loadKey(passphraseTextOrKey, salt);
+	static async encodeAES256GCM(inputU8a, key, salt = null) {
 		const fixedPart = Cryptor.getFixedField();
 		const invocationPart = Cryptor.getInvocationField();
 		const iv = Uint8Array.from([...fixedPart, ...new Uint8Array(invocationPart.buffer)]);
-		console.log(iv);
-		console.log('encodeAES256GCM 0 inputU8a:' + inputU8a);
+		// console.log(key);
+		// console.log(iv);
+		// console.log('encodeAES256GCM 0 inputU8a:' + inputU8a);
 		const encryptedDataAB = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, inputU8a.buffer);
-		console.log('encodeAES256GCM 1 encryptedDataAB:' + encryptedDataAB);
-		console.log('encodeAES256GCM 2 iv' + Base64Util.aToB64u(iv) + '/' + iv.byteLength);
-		console.log('encodeAES256GCM 3 salt' + Base64Util.aToB64u(salt) + '/' + salt.byteLength);
-		console.log('encodeAES256GCM 5 encryptedDataAB:' + Base64Util.aToB64u(encryptedDataAB));
+		// console.log('encodeAES256GCM 1 encryptedDataAB:' + encryptedDataAB);
+		// console.log('encodeAES256GCM 2 iv' + Base64Util.aToB64u(iv) + '/' + iv.byteLength);
+		// console.log('encodeAES256GCM 3 salt' + Base64Util.aToB64u(salt) + '/' + salt.byteLength);
+		// console.log('encodeAES256GCM 5 encryptedDataAB:' + Base64Util.aToB64u(encryptedDataAB));
 		return [Base64Util.aToB64u(encryptedDataAB), Base64Util.aToB64u(iv.buffer)].join('/');
 	}
 	static async decrypt(pt, dataD64urls) {
 		const url = location.href.split(/\?#/g)[0];
-		const salt = await Hasher.sha512(url + pt);
-		const key = await Cryptor.getKey(pt, salt);
-		return await Cryptor.decodeAES256GCM(dataD64urls, key, salt, true);
+		const saltB64 = await Hasher.sha512(url + pt);
+		const [key, salt] = await Cryptor.getKey(pt, saltB64);
+		return await Cryptor.decodeAES256GCM(dataD64urls, key, salt);
 	}
-	static async decodeAES256GCM(dataD64urls, key, saltInput = null, isAB) {
+	static async decodeAES256GCM(dataD64urls, key, salt = null) {
 		const [encryptedDataBase64Url, invocationPart] = dataD64urls.split('/');
-		const salt = Cryptor.getSalt(saltInput, isAB);
-		console.log(salt);
-		console.log(invocationPart);
-		console.log('encryptedDataBase64Url.length');
-		console.log(encryptedDataBase64Url.length);
-		console.log(encryptedDataBase64Url);
-		console.log(dataD64urls.length);
-		console.log(dataD64urls);
-		console.log('decodeAES256GCM 1 salt:' + salt);
+		// console.log('dataD64urls.length:' + dataD64urls.length);
+		// console.log(dataD64urls);
+		// console.log(salt);
+		// console.log(invocationPart);
+		// console.log('encryptedDataBase64Url.length');
+		// console.log(encryptedDataBase64Url.length);
+		// console.log(encryptedDataBase64Url);
+		// console.log('decodeAES256GCM 1 salt:' + salt);
 		const iv = new Uint8Array(Base64Util.b64uToAb(invocationPart));
-		console.log(iv);
-		console.log('decodeAES256GCM 2 iv:' + iv);
+		// console.log(iv);
+		// console.log('decodeAES256GCM 2 iv:' + iv);
 		const encryptedData = Base64Util.b64uToAb(encryptedDataBase64Url);
-		console.log('decodeAES256GCM 3 encryptedData:' + encryptedData);
-		console.log('decodeAES256GCM 4 key:' + key);
-		console.log('encryptedDataAB_:' + Base64Util.aToB64u(encryptedData));
-		console.log('decodeAES256GCM 6 encryptedData:' + Base64Util.aToB64u(encryptedData));
+		// console.log('decodeAES256GCM 3 encryptedData:' + encryptedData);
+		// console.log('decodeAES256GCM 4 key:' + key);
+		// console.log('encryptedDataAB_:' + Base64Util.aToB64u(encryptedData));
+		// console.log('decodeAES256GCM 6 encryptedData:' + Base64Util.aToB64u(encryptedData));
 		let decryptedData = null;
 		try {
 			decryptedData = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, encryptedData);
@@ -362,10 +361,10 @@ class Cryptor {
 			console.warn(e);
 			return null;
 		}
-		console.log('decodeAES256GCM 7 decryptedData:' + decryptedData);
-		console.log('decodeAES256GCM 7 decryptedData:' + Base64Util.aToB64u(decryptedData));
-		console.log('decodeAES256GCM 8 decryptedData:' + decryptedData);
-		console.log('decodeAES256GCM 8 decryptedData:' + BinaryConverter.u8aToString(new Uint8Array(decryptedData)));
+		// console.log('decodeAES256GCM 7 decryptedData:' + decryptedData);
+		// console.log('decodeAES256GCM 7 decryptedData:' + Base64Util.aToB64u(decryptedData));
+		// console.log('decodeAES256GCM 8 decryptedData:' + decryptedData);
+		// console.log('decodeAES256GCM 8 decryptedData:' + Base64Util.u8a2bs(new Uint8Array(decryptedData)));
 		return new Uint8Array(decryptedData);
 	}
 }
@@ -531,6 +530,7 @@ class ImageBuilder {
 		const fnb64 = Base64Util.to64(fileName);
 		const [meta, data] = dataUri.split(COMMA);
 		const dataE = passwd ? await Cryptor.encrypt(passwd, Base64Util.b64ToU8a(data)) : data;
+		console.log('dataE:' + dataE);
 		const dataAll = [fnb64, meta, dataE].join(COMMA);
 		const len = dataAll.length;
 		if (len / 4 > MAX_bytes3 - 4) {
@@ -552,6 +552,7 @@ class ImageBuilder {
 			const sub = dataAll.substring(start, end);
 			const a = new Uint8ClampedArray(MAX_bytes4);
 			a.fill(COMMA_I);
+			console.log('sub:' + sub);
 			const chars = sub.split('');
 			chars.unshift('');
 			chars.unshift('');
@@ -655,8 +656,9 @@ class FileBuilder {
 		const fnb64 = tokens[0];
 		const type = tokens[1];
 		const b64 = tokens[2];
-		const b64a = passwd ? await Cryptor.decrypt(passwd, b64) : b64;
-		const dataUri = type + ',' + b64;
+		console.log('str:' + str);
+		const b64a = passwd ? Base64Util.u8a2b64(await Cryptor.decrypt(passwd, b64)) : b64;
+		const dataUri = type + ',' + b64a;
 		const fileName = Base64Util.from64(fnb64);
 		FL.dl(fileName, dataUri, null, true);
 	}

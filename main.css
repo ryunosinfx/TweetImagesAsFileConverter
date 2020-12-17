@@ -79,14 +79,14 @@ div.tabbody .tb.selected {
 }
 div.tabbody .tb .form div.row {
 	width: calc(100% - 0em);
-	padding: 0.5em 0;
+	padding: 0.1em 0;
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
 	justify-content: space-around;
 }
 .item {
-	padding: 0.5em;
+	padding: 0.1em 0.5em;
 	min-width: calc(1100 / 4) px;
 	background-color: lightskyblue;
 	margin-bottom: 0em;
@@ -96,6 +96,9 @@ div.tabbody .tb .form div.row {
 }
 .col.file {
 	width: 40vw;
+}
+.col.input input {
+	width: calc(100vw - 2em);
 }
 .col.file input {
 	width: 40vw;
