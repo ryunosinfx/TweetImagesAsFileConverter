@@ -133,6 +133,22 @@ button {
 	display: inline-block;
 	max-width: 5em;
 }
+h2 span.passwd {
+	display: inline-block;
+	font-size: 50%;
+	padding: 0 0.2em 0 2em;
+	max-width: 50vw;
+	height: 1em;
+	line-height: 3em;
+	vertical-align: top;
+}
+h2 span.passwd input {
+	display: inline-block;
+	max-width: calc(100% - 2em);
+	line-height: 2em;
+	margin-top: -2em;
+	font-size: 120%;
+}
 .loading {
 	position: absolute;
 	width: 100vw;
