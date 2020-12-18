@@ -18,11 +18,11 @@ h2 {
 	box-sizing: content-box;
 }
 h1 {
-	padding: 0 0.5em;
+	padding: 0 0em;
 	max-width: calc(100vw - 1em);
 	word-wrap: break-word;
-	letter-spacing: 1px;
-	line-height: 1em;
+	letter-spacing: -2px;
+	line-height: 0.9em;
 }
 h2 {
 	padding: 0 0.5em;
@@ -40,10 +40,10 @@ div.container {
 div.header {
 	width: calc(100vw - 0em);
 	background-color: antiquewhite;
-	padding: 0.5em;
+	padding: 0.5em 0;
 }
 div.body {
-	width: calc(100vw - 0em);
+	width: calc(100vw - 1em);
 	background-color: aquamarine;
 	padding: 0.5em;
 }
@@ -132,9 +132,21 @@ button {
 	padding: 1em;
 	min-width: 30vw;
 }
+.col.input {
+	width: calc(100vw - 2em);
+}
+.col.input input {
+	max-width: calc(100vw - 5em);
+}
 .col.size input {
 	display: inline-block;
 	max-width: 5em;
+}
+.col.sig {
+	width: calc(100vw - 2em);
+	color: tomato;
+	font-size: 45%;
+	word-wrap: break-word;
 }
 h2 span.passwd {
 	display: inline-block;

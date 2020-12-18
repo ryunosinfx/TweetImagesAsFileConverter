@@ -123,8 +123,17 @@ class Hasher {
 		return t === 'base64' ? Base64Util.aToB64(r) : t === 'base64url' ? Base64Util.aToB64u(r) : t === 'raw' ? r : Base64Util.aToHex(r);
 	}
 }
-
+class ProcUtil {
+	static sleep(ms) {
+		return new Promise((resolve) => {
+			setTimeout(() => {
+				resolve();
+			}, ms);
+		});
+	}
+}
 const max = 50000;
+const RB64Regex = /^[0-9a-zA-Z/\+]+[=]{0,3}$/;
 class Base64Util {
 	static from64(d) {
 		const b = Base64Util.b64ToU8a(d);
@@ -174,8 +183,8 @@ class Base64Util {
 		return b;
 	}
 	static u8a2b64(u8a) {
-		const bs = Base64Util.u8a2bs(u8a);
-		return btoa(bs);
+		const bs = u8a ? Base64Util.u8a2bs(u8a) : null;
+		return bs ? btoa(bs) : null;
 	}
 	static s2u8a(s) {
 		const d = Base64Util.to64(s);
@@ -230,6 +239,9 @@ class Base64Util {
 		}
 		return a;
 	}
+	static isB64(d) {
+		return d && typeof d === 'string' && d.length % 4 === 0 && RB64Regex.test(d);
+	}
 
 	static bs2utf8(bs) {
 		const u8a = Base64Util.bs2u8a(bs);
@@ -280,12 +292,9 @@ const STHC = 10000;
 class Cryptor {
 	constructor() {}
 	static async getKey(pt, saltB64) {
-		console.log('getKey salt:' + saltB64 + '/passphraseText:' + pt);
 		const digest = await Hasher.sha256(pt, STHC);
 		const salt = Base64Util.b64ToU8a(saltB64).buffer;
-		console.log('digest:' + digest);
 		const keyMaterial = await crypto.subtle.importKey('raw', Base64Util.b64ToU8a(digest), { name: 'PBKDF2' }, false, ['deriveKey']);
-		console.log('keyMaterial:' + keyMaterial);
 		const key = await crypto.subtle.deriveKey(
 			{
 				name: 'PBKDF2',
@@ -298,7 +307,6 @@ class Cryptor {
 			false,
 			['encrypt', 'decrypt']
 		);
-		console.log('key:' + key);
 		return [key, salt];
 	}
 	static getFixedField() {
@@ -307,28 +315,19 @@ class Cryptor {
 	static getInvocationField() {
 		return crypto.getRandomValues(new Uint32Array(1));
 	}
-	static secureMathRandom() {
-		return window.crypto.getRandomValues(new Uint32Array(1))[0] / 4294967295;
-	}
 	static async encrypt(pt, dataU8a) {
 		const url = location.href.split(/\?#/g)[0];
 		const saltB64 = await Hasher.sha512(url + pt);
 		const [key, salt] = await Cryptor.getKey(pt, saltB64);
-		return await Cryptor.encodeAES256GCM(dataU8a, key, salt);
+		return await Cryptor.encodeAES256GCM(dataU8a, key);
 	}
-	static async encodeAES256GCM(inputU8a, key, salt = null) {
+	static async encodeAES256GCM(inputU8a, key) {
 		const fixedPart = Cryptor.getFixedField();
 		const invocationPart = Cryptor.getInvocationField();
 		const iv = Uint8Array.from([...fixedPart, ...new Uint8Array(invocationPart.buffer)]);
-		// console.log(key);
-		// console.log(iv);
-		// console.log('encodeAES256GCM 0 inputU8a:' + inputU8a);
 		const encryptedDataAB = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, inputU8a.buffer);
-		// console.log('encodeAES256GCM 1 encryptedDataAB:' + encryptedDataAB);
-		// console.log('encodeAES256GCM 2 iv' + Base64Util.aToB64u(iv) + '/' + iv.byteLength);
-		// console.log('encodeAES256GCM 3 salt' + Base64Util.aToB64u(salt) + '/' + salt.byteLength);
-		// console.log('encodeAES256GCM 5 encryptedDataAB:' + Base64Util.aToB64u(encryptedDataAB));
-		return [Base64Util.aToB64u(encryptedDataAB), Base64Util.aToB64u(iv.buffer)].join('/');
+		const encryped = [Base64Util.aToB64u(encryptedDataAB), Base64Util.aToB64u(iv.buffer)].join('/');
+		return encryped;
 	}
 	static async decrypt(pt, dataD64urls) {
 		const url = location.href.split(/\?#/g)[0];
@@ -336,35 +335,17 @@ class Cryptor {
 		const [key, salt] = await Cryptor.getKey(pt, saltB64);
 		return await Cryptor.decodeAES256GCM(dataD64urls, key, salt);
 	}
-	static async decodeAES256GCM(dataD64urls, key, salt = null) {
-		const [encryptedDataBase64Url, invocationPart] = dataD64urls.split('/');
-		// console.log('dataD64urls.length:' + dataD64urls.length);
-		// console.log(dataD64urls);
-		// console.log(salt);
-		// console.log(invocationPart);
-		// console.log('encryptedDataBase64Url.length');
-		// console.log(encryptedDataBase64Url.length);
-		// console.log(encryptedDataBase64Url);
-		// console.log('decodeAES256GCM 1 salt:' + salt);
-		const iv = new Uint8Array(Base64Util.b64uToAb(invocationPart));
-		// console.log(iv);
-		// console.log('decodeAES256GCM 2 iv:' + iv);
-		const encryptedData = Base64Util.b64uToAb(encryptedDataBase64Url);
-		// console.log('decodeAES256GCM 3 encryptedData:' + encryptedData);
-		// console.log('decodeAES256GCM 4 key:' + key);
-		// console.log('encryptedDataAB_:' + Base64Util.aToB64u(encryptedData));
-		// console.log('decodeAES256GCM 6 encryptedData:' + Base64Util.aToB64u(encryptedData));
+	static async decodeAES256GCM(dataD64urls, key) {
 		let decryptedData = null;
 		try {
+			const [encryptedDataBase64Url, invocationPart] = dataD64urls.split('/');
+			const iv = new Uint8Array(Base64Util.b64uToAb(invocationPart));
+			const encryptedData = Base64Util.b64uToAb(encryptedDataBase64Url);
 			decryptedData = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, encryptedData);
 		} catch (e) {
 			console.warn(e);
 			return null;
 		}
-		// console.log('decodeAES256GCM 7 decryptedData:' + decryptedData);
-		// console.log('decodeAES256GCM 7 decryptedData:' + Base64Util.aToB64u(decryptedData));
-		// console.log('decodeAES256GCM 8 decryptedData:' + decryptedData);
-		// console.log('decodeAES256GCM 8 decryptedData:' + Base64Util.u8a2bs(new Uint8Array(decryptedData)));
 		return new Uint8Array(decryptedData);
 	}
 }
@@ -413,12 +394,21 @@ class ImageProcessor {
 	loadAbFromPngDataUri(dUri) {
 		return new Promise((resolve, reject) => {
 			let imgElm = new Image();
-			imgElm.onload = () => {
+			imgElm.onload = async () => {
 				const w = imgElm.naturalWidth;
 				const h = imgElm.naturalHeight;
-				this.ctx.drawImage(imgElm, 0, 0, w, h);
+				this.canvas.setAttribute('width', w);
+				this.canvas.setAttribute('height', h);
+				this.ctx.clearRect(0, 0, w, h);
+				this.ctx.drawImage(imgElm, 0, 0);
 				const idata = this.ctx.getImageData(0, 0, w, h);
-				resolve(idata.data.buffer);
+				const ab = idata.data.buffer;
+				resolve(ab);
+				this.ctx.clearRect(0, 0, w, h);
+				imgElm.onload = null;
+				imgElm.onerror = null;
+				imgElm.src = null;
+				imgElm = null;
 			};
 			imgElm.src = dUri;
 			imgElm.onerror = (e) => {
@@ -476,10 +466,10 @@ class View {
 	}
 }
 class ImageBuilder {
-	constructor(fileId, imageids, sizeId, sizeExpected, pwId, view) {
+	constructor(fileId, imageids, sizeInputId, sizeExpected, pwId, sigId, sizeId, view) {
 		this.data = {};
 		this.isLoading = false;
-		const inputSize = v.gid(sizeId);
+		const inputSize = v.gid(sizeInputId);
 		inputSize.value = 900;
 		const sizeFunc = (event) => {
 			const inputSize = event.target;
@@ -495,8 +485,15 @@ class ImageBuilder {
 			const { b64d, file } = await FL.l(event);
 			if (b64d) {
 				this.data[fileId] = b64d;
-				const inputSize = v.gid(sizeId);
+				const inputSize = v.gid(sizeInputId);
 				const passwd = v.gid(pwId);
+				const u8a = Base64Util.b64ToU8a(b64d.split(',')[1]);
+				if (u8a) {
+					const sigElm = v.gid(sigId);
+					const sizeElm = v.gid(sizeId);
+					sigElm.textContent = await Base64Util.sig(u8a);
+					sizeElm.textContent = u8a.length.toLocaleString();
+				}
 				await this.f2is(fileId, imageids, file.name, inputSize.value, passwd.value);
 			}
 			view.heideLoading();
@@ -530,7 +527,6 @@ class ImageBuilder {
 		const fnb64 = Base64Util.to64(fileName);
 		const [meta, data] = dataUri.split(COMMA);
 		const dataE = passwd ? await Cryptor.encrypt(passwd, Base64Util.b64ToU8a(data)) : data;
-		console.log('dataE:' + dataE);
 		const dataAll = [fnb64, meta, dataE].join(COMMA);
 		const len = dataAll.length;
 		if (len / 4 > MAX_bytes3 - 4) {
@@ -552,7 +548,6 @@ class ImageBuilder {
 			const sub = dataAll.substring(start, end);
 			const a = new Uint8ClampedArray(MAX_bytes4);
 			a.fill(COMMA_I);
-			console.log('sub:' + sub);
 			const chars = sub.split('');
 			chars.unshift('');
 			chars.unshift('');
@@ -587,7 +582,7 @@ class ImageBuilder {
 	}
 }
 class FileBuilder {
-	constructor(fileIds, imageids, buttonId, clearButtonId, pwId, view) {
+	constructor(fileIds, imageids, buttonId, clearButtonId, pwId, sigId, sizeId, view) {
 		this.data = {};
 		this.imageids = imageids;
 		this.fileIds = fileIds;
@@ -610,11 +605,18 @@ class FileBuilder {
 			view.showLoadling();
 			try {
 				const passwd = v.gid(pwId);
-				await this.bfDL(passwd.value);
+				const result = await this.bfDL(passwd.value);
+				if (result) {
+					const sigElm = v.gid(sigId);
+					const sizeElm = v.gid(sizeId);
+					sigElm.textContent = await Base64Util.sig(result);
+					sizeElm.textContent = result.length.toLocaleString();
+				}
 			} catch (e) {
 				console.error(e);
 				console.log(e.stack);
 			}
+			const passwd = v.gid(pwId);
 			view.heideLoading();
 		});
 		v.ael(clearButtonId, 'click', async (event) => {
@@ -636,7 +638,7 @@ class FileBuilder {
 			const len = u8a.length;
 			const nlen = Math.floor((len / 4) * 3);
 			const nU8a = new Uint8Array(nlen);
-			for (let i = 0; i < len; i++) {
+			for (let i = 4; i < len; i++) {
 				if (i % 4 === 3) {
 					continue;
 				}
@@ -650,17 +652,23 @@ class FileBuilder {
 		const str = td.decode(u8a);
 		const tokens = str.split(',');
 		if (tokens.length < 3) {
-			alert('invalid data!');
+			console.log('str:' + str);
+			alert('invalid data! Empty!');
 			return null;
 		}
 		const fnb64 = tokens[0];
 		const type = tokens[1];
 		const b64 = tokens[2];
-		console.log('str:' + str);
 		const b64a = passwd ? Base64Util.u8a2b64(await Cryptor.decrypt(passwd, b64)) : b64;
+		if (!Base64Util.isB64(b64a)) {
+			console.log('str:' + str);
+			alert('invalid data! Crypted Data!');
+			return null;
+		}
 		const dataUri = type + ',' + b64a;
 		const fileName = Base64Util.from64(fnb64);
 		FL.dl(fileName, dataUri, null, true);
+		return Base64Util.b64ToU8a(b64a);
 	}
 	clear() {
 		for (let id of this.fileIds) {
@@ -680,12 +688,16 @@ const view = new View(tabIds, loadingId);
 const fileId = 'FileInput';
 const sizeId = 'sizeInput';
 const pwId1 = 'pw1';
+const sigId1 = 'sig1';
+const sizeId1 = 'size1';
 const sizeExpected = 'sizeExpected';
 const outputImageids = ['image1result', 'image2result', 'image3result', 'image4result'];
-new ImageBuilder(fileId, outputImageids, sizeId, sizeExpected, pwId1, view);
+new ImageBuilder(fileId, outputImageids, sizeId, sizeExpected, pwId1, sigId1, sizeId1, view);
 const fileIds = ['image1File', 'image2File', 'image3File', 'image4File'];
 const inputViewImageids = ['image1', 'image2', 'image3', 'image4'];
 const buttonId = 'FileOutput';
 const pwId2 = 'pw2';
+const sigId2 = 'sig2';
+const sizeId2 = 'size2';
 const clearButtonId = 'FileClear';
-new FileBuilder(fileIds, inputViewImageids, buttonId, clearButtonId, pwId2, view);
+new FileBuilder(fileIds, inputViewImageids, buttonId, clearButtonId, pwId2, sigId2, sizeId2, view);
