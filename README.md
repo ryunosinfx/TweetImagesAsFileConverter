@@ -9,17 +9,21 @@ To work you need to prepare ES2017 SuportBlowser(Chromium,Chrome,Firefox,etc)
 You can convert a file(max 6.9MB) to images (900*900 px png max 4files).
 And you can convert these images to the file.
 
+Support data encryption! algorism is AES256 GCM!
+
 ## Make Images to Tweet on Twitter
 * Prepare 1 file which you want to exchage on twitter.
 * Open demo page.
 * Ckick "To Images"tab.
 * Set the file to "File:". Then images automatically made.(if data is small,then images made less than 4.)
 * Click images to download them.
+* If the file is encrypted, you mast input valid password.
 
 ## Make The File from Tweeted Images
 * Prepare 1~4 image files which download from Twitter.
 * Open demo page.
 * Ckick "To File"tab.
+* If you want to encrypt the data, input password to pw form.
 * Set the image files to "image1~4:". Then images automatically loaded.(if data is small,then images made less than 4.)
   * 1~4 Files valid order is required.
 * You set need image files,Click "convertToFile"button to build and download The file.
