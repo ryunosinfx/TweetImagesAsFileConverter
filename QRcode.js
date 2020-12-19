@@ -27,7 +27,7 @@ class QR8bitByte {
 	constructor(data) {
 		this.mode = QRMode.MODE_8BIT_BYTE;
 		this.data = data;
-		this.parsedData = [];
+		const parsedData = [];
 		// Added to support UTF-8 Characters
 		for (let i = 0, l = data.length; i < l; i++) {
 			const byteArray = [];
@@ -47,10 +47,11 @@ class QR8bitByte {
 			} else {
 				byteArray[0] = code;
 			}
-			this.parsedData.push(byteArray);
+			parsedData.push(byteArray);
 		}
-		this.parsedData = Array.prototype.concat.apply([], this.parsedData);
+		this.parsedData = [].concat(parsedData);
 		if (this.parsedData.length !== data.length) {
+			// ADD BOM
 			this.parsedData.unshift(191);
 			this.parsedData.unshift(187);
 			this.parsedData.unshift(239);
@@ -629,7 +630,6 @@ class QRMath {
 	}
 }
 QRMath.init();
-
 class QRPolynomial {
 	constructor(num, shift) {
 		const numLen = num.length;
@@ -969,7 +969,6 @@ class SvgDrawer {
 		const nCount = qrCodeData.getModuleCount();
 		const nWidth = Math.floor(htmlOption.width / nCount);
 		const nHeight = Math.floor(htmlOption.height / nCount);
-
 		this.clear();
 		const attrs = { viewBox: '0 0 ' + nCount + ' ' + nCount, width: '100%', height: '100%', fill: htmlOption.colorLight };
 		const svg = this.makeSVG('svg', attrs);
@@ -1021,7 +1020,6 @@ class HtmlDrawer {
 		const tElm = document.createElement('table');
 		tElm.style.borderWidth = 0;
 		tElm.style.borderCollapse = 'collapse';
-
 		for (const row = 0; row < nCount; row++) {
 			const trElm = document.createElement('tr');
 			for (const col = 0; col < nCount; col++) {
@@ -1150,7 +1148,6 @@ class QRCode {
 		this.htmlOption = {
 			width: 256,
 			height: 256,
-			typeNumber: 4,
 			colorDark: '#000000',
 			colorLight: '#ffffff',
 			correctLevel: QRErrorCorrectLevel.H,
@@ -1166,7 +1163,7 @@ class QRCode {
 				this.htmlOption[i] = vOption[i];
 			}
 		}
-		const elment = typeof el === 'string' ? document.getElementById(elm) : elm;
+		const elment = typeof elm === 'string' ? document.getElementById(elm) : elm;
 		const DrawingClass = this.htmlOption.useSVG ? svgDrawer : this.htmlOption.useHtml ? HtmlDrawer : CanvasDrawer;
 		this.elm = elment;
 		this.drawer = new DrawingClass(elment, this.htmlOption);
@@ -1251,5 +1248,20 @@ class QRCode {
 	 */
 	clear() {
 		this.drawer.clear();
+	}
+}
+class HtmlQRCode extends QRCode {
+	constructor(elm, text = 'HtmlQRCode', width = 256, height = 256, colorDark = '#000000', colorLight = '#ffffff', correctLevel = QRErrorCorrectLevel.H) {
+		super(elm, { text, width, height, colorDark, colorLight, correctLevel, useHtml: true });
+	}
+}
+class SvgQRCode extends QRCode {
+	constructor(elm, text = 'SvgQRCode', width = 256, height = 256, colorDark = '#000000', colorLight = '#ffffff', correctLevel = QRErrorCorrectLevel.H) {
+		super(elm, { text, width, height, colorDark, colorLight, correctLevel, useSVG: true });
+	}
+}
+class CanvasQRCode extends QRCode {
+	constructor(elm, text = 'CanvasQRCode', width = 256, height = 256, colorDark = '#000000', colorLight = '#ffffff', correctLevel = QRErrorCorrectLevel.H) {
+		super(elm, { text, width, height, colorDark, colorLight, correctLevel });
 	}
 }
