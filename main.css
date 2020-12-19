@@ -40,7 +40,7 @@ div.container {
 div.header {
 	width: calc(100vw - 0em);
 	background-color: antiquewhite;
-	padding: 0.5em 0;
+	padding: 0 0 0.2em 0;
 }
 div.body {
 	width: calc(100vw - 1em);
@@ -48,7 +48,7 @@ div.body {
 	padding: 0.5em;
 }
 div.tabhead {
-	background-color: cyan;
+	background-color: aquamarine;
 	display: flex;
 	line-height: 2em;
 }
@@ -79,7 +79,7 @@ div.tabbody .tb.selected {
 }
 div.tabbody .tb .form div.row {
 	width: calc(100% - 0em);
-	padding: 0.1em 0;
+	padding: 0;
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
@@ -97,8 +97,22 @@ div.tabbody .tb .form div.row {
 .col.file {
 	width: 40vw;
 }
+.col.input {
+	width: calc(100vw - 2em);
+}
 .col.input input {
 	width: calc(100vw - 2em);
+	max-width: calc(100vw - 5em);
+}
+.col.size input {
+	display: inline-block;
+	max-width: 5em;
+}
+.col.sig {
+	width: calc(100vw - 2em);
+	color: tomato;
+	font-size: 45%;
+	word-wrap: break-word;
 }
 .col.file input {
 	width: 40vw;
@@ -106,6 +120,7 @@ div.tabbody .tb .form div.row {
 .col.title {
 	font-weight: bold;
 	background-color: lightskyblue;
+	color: darkblue;
 }
 .col img {
 	display: inline-block;
@@ -131,22 +146,6 @@ canvas {
 button {
 	padding: 1em;
 	min-width: 30vw;
-}
-.col.input {
-	width: calc(100vw - 2em);
-}
-.col.input input {
-	max-width: calc(100vw - 5em);
-}
-.col.size input {
-	display: inline-block;
-	max-width: 5em;
-}
-.col.sig {
-	width: calc(100vw - 2em);
-	color: tomato;
-	font-size: 45%;
-	word-wrap: break-word;
 }
 h2 span.passwd {
 	display: inline-block;
