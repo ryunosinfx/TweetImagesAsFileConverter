@@ -359,9 +359,6 @@ class ImageProcessor {
 			v.ab(this.canvas);
 		};
 	}
-	createImageData(w, h) {
-		return this.ctx.createImageData(w, h);
-	}
 	async getUriFomBMD(iamgeBitmapData) {
 		const w = Math.floor(iamgeBitmapData.width);
 		const h = Math.floor(iamgeBitmapData.height);
@@ -381,15 +378,6 @@ class ImageProcessor {
 		newPaperData = undefined;
 		this.loadAbFromPngDataUri(dataUri);
 		return dataUri;
-	}
-	exportImageData(w, h) {
-		return this.ctx.getImageData(0, 0, w, h);
-	}
-	exportPng() {
-		return this.canvas.toDataURL();
-	}
-	exportJpeg(quority = 1.0) {
-		return this.canvas.toDataURL('image/jpeg', quority);
 	}
 	loadAbFromPngDataUri(dUri) {
 		return new Promise((resolve, reject) => {
