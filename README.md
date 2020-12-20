@@ -58,3 +58,7 @@ https://ryunosinfx.github.io/TweetImagesAsFileConverter/index.html
    * all uint8array -> string(filename & dataUri)
    * string split "," -> filename & dataUri
    * download dataUri as filename
+   
+## Licence
+
+MIT Licence
