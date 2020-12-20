@@ -56,7 +56,7 @@ div.tabhead .tab {
 	background-color: deepskyblue;
 	display: flex;
 	line-height: 2em;
-	padding: 0.2em 1em;
+	padding: 0.2em 0.5em;
 	border-radius: 0.3em 0.3em 0 0;
 	margin-right: 0.2em;
 	cursor: pointer;
@@ -132,6 +132,25 @@ div.tabbody .tb .form div.row {
 }
 .col.dl img {
 	cursor: pointer;
+}
+.col.url input {
+	width: calc(100vw - 2em);
+	font-size: 65%;
+	padding: 0.5em 0;
+}
+.col.qrcode img {
+	width: calc(100vw - 2em);
+	height: calc(100vw - 2em);
+	max-width: 512px;
+	max-height: 512px;
+}
+.col.data {
+	margin-top: 1em;
+	width: calc(100vw - 4em);
+	padding: 1em;
+	color: tomato;
+	word-wrap: break-word;
+	background-color: lightskyblue;
 }
 .selected {
 	display: block;

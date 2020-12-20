@@ -666,11 +666,73 @@ class FileBuilder {
 		}
 		for (let id of this.imageids) {
 			const imgElm = v.gid(id);
-			imgElm.src = null;
+			imgElm.src = '';
 		}
 	}
 }
-const tabIds = ['toFile', 'toImage'];
+class QRCodeManager {
+	constructor(urlId, ankerId, ankerId2, qrcodeId, qrcodeDataId) {
+		const url = location.href;
+		const pathname = location.pathname;
+		const hash = location.hash;
+		const tweetUrlElm = v.gid(urlId);
+		const ankerElm = v.gid(ankerId);
+		const anker2Elm = v.gid(ankerId2);
+		const qrcodeElm = v.gid(qrcodeId);
+		const qrcodeDataElm = v.gid(qrcodeDataId);
+		const delimiter = '?a#';
+		const qr = new QRCode(qrcodeElm, { height: 1024, width: 1024 });
+		const linkFuc = (tweetUrl) => {
+			if (tweetUrl.indexOf('https://') === 0) {
+				anker2Elm.style.display = 'inline';
+				ankerElm.setAttribute('href', tweetUrl);
+				anker2Elm.setAttribute('href', tweetUrl);
+			} else {
+				ankerElm.setAttribute('href', '');
+				anker2Elm.setAttribute('href', '');
+				anker2Elm.style.display = 'none';
+			}
+		};
+		if (hash) {
+			try {
+				const pureHash = hash.indexOf('#') > -1 ? hash.split('#')[1] : hash;
+				const tweetUrl = Base64Util.from64(Base64Util.toB64u(pureHash));
+				linkFuc(tweetUrl);
+				tweetUrlElm.value = tweetUrl;
+				const nextURL = url.split('#')[0] + delimiter + pureHash;
+				qrcodeDataElm.textContent = nextURL + ' size:' + nextURL.length;
+				qr.makeCode(nextURL);
+			} catch (e) {
+				console.warn(e);
+			}
+		}
+		this.now = Date.now();
+		const buildFunc = (event) => {
+			setTimeout(() => {
+				const now = Date.now();
+				if (now - this.now < 100) {
+					return;
+				}
+				this.now = now;
+				const tweetUrlElm = event.target;
+				const tweetUrl = tweetUrlElm.value;
+				linkFuc(tweetUrl);
+				const nextHash = Base64Util.toB64u(Base64Util.to64(tweetUrl));
+				const newPath = pathname + delimiter + nextHash;
+				const nextURL = url.split('#')[0] + delimiter + nextHash;
+				history.replaceState(null, '', newPath);
+				qrcodeDataElm.textContent = nextURL + ' size:' + nextURL.length;
+				try {
+					qr.makeCode(nextURL);
+				} catch (e) {
+					console.warn(e);
+				}
+			}, 10);
+		};
+		v.ael(tweetUrlElm, 'input', buildFunc);
+	}
+}
+const tabIds = ['toFile', 'toImage', 'QRCode'];
 const loadingId = 'loading';
 const view = new View(tabIds, loadingId);
 const fileId = 'FileInput';
@@ -689,3 +751,9 @@ const sigId2 = 'sig2';
 const sizeId2 = 'size2';
 const clearButtonId = 'FileClear';
 new FileBuilder(fileIds, inputViewImageids, buttonId, clearButtonId, pwId2, sigId2, sizeId2, view);
+const tweetUrlId = 'tweetUrl';
+const anckerId1 = 'ancker1';
+const anckerId2 = 'ancker2';
+const qrcodeId = 'qrcode';
+const qrcodeDataId = 'qrcodeData';
+new QRCodeManager(tweetUrlId, anckerId1, anckerId2, qrcodeId, qrcodeDataId);

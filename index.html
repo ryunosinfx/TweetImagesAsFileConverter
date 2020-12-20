@@ -4,6 +4,8 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
         <link rel="stylesheet" type="text/css" href="main.css">
+		<script src="./qrcode.js"></script>
+		<!-- <script src="./QRcode.Origin.js"></script> -->
 		<title>TweetImagesAsFileConverter</title>
 	</head>
 	<body>
@@ -16,11 +18,15 @@
                 <div class="tabhead">
                     <div class="tab selected" id="toFile">To File</div> 
                     <div class="tab" id="toImage">To Images</div> 
+                    <div class="tab" id="QRCode">QRCode</div> 
                 </div> 
                 <div class="tabbody">
                     <div class="tb selected" id="toFileBody">
                         <h2>To File<span class="passwd">pw:<input type="password" id="pw2"></span></h2>
                         <div class="form">
+                            <div class="row">
+                                <a id="ancker2" href="#" target="_blank">Open Tweet Page to Get Images.</a>
+                            </div>
                             <div class="row">
                                 <div class="item">
                                     <div class="col title">source image1:</div>
@@ -77,6 +83,27 @@
                                 <div class="item">
                                     <div class="col title">result image4:</div>
                                     <div class="col dl"><img alt="result image4" id="image4result"/></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
+                    <div class="tb" id="QRCodeBody">
+                        <h2>QRCode</h2>
+                        <div class="form">
+                            <div class="row">
+                                <div class="col url">TweetURL:<input type="input" id="tweetUrl"/></div>
+                            </div>
+                            <div class="row">
+                                <div class="col link">
+                                    <a id="ancker1" href="#" target="_blank">Open Tweet Page</a> to Get Images.
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col qrcode" id="qrcode">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col data" id="qrcodeData">
                                 </div>
                             </div>
                         </div>
