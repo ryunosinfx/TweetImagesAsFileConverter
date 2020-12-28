@@ -1154,7 +1154,7 @@ class CanvasDrawer {
  * @param {String} [vOption.colorLight="#ffffff"]
  * @param {QRErrorCorrectLevel} [vOption.correctLevel=QRErrorCorrectLevel.H] [L|M|Q|H]
  */
-export class QRCode {
+class QRCode {
 	constructor(elm, vOption = {}) {
 		this.htmlOption = {
 			width: 256,
@@ -1261,17 +1261,17 @@ export class QRCode {
 		this.drawer.clear();
 	}
 }
-export class HtmlQRCode extends QRCode {
+class HtmlQRCode extends QRCode {
 	constructor(elm, text = 'HtmlQRCode', width = 256, height = 256, colorDark = '#000000', colorLight = '#ffffff', correctLevel = QRErrorCorrectLevel.H) {
 		super(elm, { text, width, height, colorDark, colorLight, correctLevel, useHtml: true });
 	}
 }
-export class SvgQRCode extends QRCode {
+class SvgQRCode extends QRCode {
 	constructor(elm, text = 'SvgQRCode', width = 256, height = 256, colorDark = '#000000', colorLight = '#ffffff', correctLevel = QRErrorCorrectLevel.H) {
 		super(elm, { text, width, height, colorDark, colorLight, correctLevel, useSVG: true });
 	}
 }
-export class CanvasQRCode extends QRCode {
+class CanvasQRCode extends QRCode {
 	constructor(elm, text = 'CanvasQRCode', width = 256, height = 256, colorDark = '#000000', colorLight = '#ffffff', correctLevel = QRErrorCorrectLevel.H) {
 		super(elm, { text, width, height, colorDark, colorLight, correctLevel });
 	}
