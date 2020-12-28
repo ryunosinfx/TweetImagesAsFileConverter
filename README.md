@@ -29,6 +29,16 @@ Support data encryption! algorism is AES256 GCM!
 * You set need image files,Click "convertToFile"button to build and download The file.
   * if feed invalid image files or order, then you get invalid file or error.
 
+## Make QRCode which conteins Url for TweetImagesAsFileConverter & Images Tweet Page
+
+Adding QRCode tab, you can get screen shot and send others.
+The QRCode conteins TweetImagesAsFileConverter page url & Tweet url which you inputed the QRCode Tab's input form.
+Scan Received Screen Shot,then open this TweetImagesAsFileConverter page & show Tweet url which you inputed!
+ * Open QRCode tab.
+ * Cpoy and Past Url for Images Tweeted Page.
+ * Then QRCode made. You send this QRCode to file Receiver. 
+ * Receiver opne the QRCode url, then open TweetImagesAsFileConverter.
+ * When to File tab has a Link to opne Images Tweeted Page in new tab.
 
 ## demo page
 https://ryunosinfx.github.io/TweetImagesAsFileConverter/index.html
@@ -48,3 +58,7 @@ https://ryunosinfx.github.io/TweetImagesAsFileConverter/index.html
    * all uint8array -> string(filename & dataUri)
    * string split "," -> filename & dataUri
    * download dataUri as filename
+   
+## Licence
+
+MIT Licence
