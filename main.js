@@ -382,7 +382,8 @@ class ImageProcessor {
 		}
 		this.ctx.clearRect(0, 0, w, h);
 		const newOne1 = this.ctx.getImageData(0, 0, w, h);
-		this.ctx.drawImage(await window.createImageBitmap(newPaperData), 0, 0);
+		this.ctx.putImageData(newPaperData, 0, 0, 0, 0, w, h);
+		// this.ctx.drawImage(await window.createImageBitmap(newPaperData), 0, 0);
 		const newOne = this.ctx.getImageData(0, 0, w, h);
 		let dataUri = this.canvas.toDataURL();
 		newPaperData = undefined;
