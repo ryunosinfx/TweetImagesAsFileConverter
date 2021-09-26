@@ -454,10 +454,11 @@ class View {
 	}
 }
 class ImageBuilder {
-	constructor(fileId, imageids, sizeInputId, sizeExpected, pwId, sigId, sizeId, view) {
+	constructor(fileId, imageids, sizeInputId, sizeExpected, pwId, sigId, sizeId, view, logElmId, redoBtnId) {
 		this.data = {};
 		this.isLoading = false;
 		const inputSize = v.gid(sizeInputId);
+		const redoBtnElm = v.gid(redoBtnId);
 		inputSize.value = 900;
 		const sizeFunc = (event) => {
 			const inputSize = event.target;
@@ -468,7 +469,7 @@ class ImageBuilder {
 		};
 		sizeFunc({ target: inputSize });
 		v.ael(inputSize, 'input', sizeFunc);
-		v.ael(fileId, 'change', async (event) => {
+		const funcOnChange = async (event) => {
 			view.showLoadling();
 			const { b64d, file } = await FL.l(event);
 			if (b64d) {
@@ -485,7 +486,22 @@ class ImageBuilder {
 				await this.f2is(fileId, imageids, file.name, inputSize.value, passwd.value);
 			}
 			view.heideLoading();
-		});
+		};
+		const funcWrapped = async (event) => {
+			const evt = event.type === 'change' ? event : this.lastEvent;
+			this.lastEvent = evt;
+			const logElm = v.gid(logElmId);
+			logElm.textContent = '';
+			try {
+				await funcOnChange(evt);
+			} catch (e) {
+				console.log(e);
+				logElm.textContent = e ? e + ' \n' + e.stack : e;
+				view.heideLoading();
+			}
+		};
+		v.ael(fileId, 'change', funcWrapped);
+		v.ael(redoBtnElm, 'click', funcWrapped);
 		for (let imageid of imageids) {
 			v.ael(imageid, 'click', async (event) => {
 				const imgElm = event.target;
@@ -570,7 +586,7 @@ class ImageBuilder {
 	}
 }
 class FileBuilder {
-	constructor(fileIds, imageids, buttonId, clearButtonId, pwId, sigId, sizeId, view) {
+	constructor(fileIds, imageids, buttonId, clearButtonId, pwId, sigId, sizeId, view, logElmId) {
 		this.data = {};
 		this.imageids = imageids;
 		this.fileIds = fileIds;
@@ -591,6 +607,8 @@ class FileBuilder {
 		}
 		v.ael(buttonId, 'click', async (event) => {
 			view.showLoadling();
+			const logElm = v.gid(logElmId);
+			logElm.textContent = '';
 			try {
 				const passwd = v.gid(pwId);
 				const result = await this.bfDL(passwd.value);
@@ -603,6 +621,7 @@ class FileBuilder {
 			} catch (e) {
 				console.error(e);
 				console.log(e.stack);
+				logElm.textContent = e ? e + ' \n' + e.stack : e;
 			}
 			const passwd = v.gid(pwId);
 			view.heideLoading();
@@ -742,7 +761,9 @@ const sigId1 = 'sig1';
 const sizeId1 = 'size1';
 const sizeExpected = 'sizeExpected';
 const outputImageids = ['image1result', 'image2result', 'image3result', 'image4result'];
-new ImageBuilder(fileId, outputImageids, sizeId, sizeExpected, pwId1, sigId1, sizeId1, view);
+const errorLogsImage = 'errorLogsImage';
+const redoBtnId = 'redoButton';
+new ImageBuilder(fileId, outputImageids, sizeId, sizeExpected, pwId1, sigId1, sizeId1, view, errorLogsImage, redoBtnId);
 const fileIds = ['image1File', 'image2File', 'image3File', 'image4File'];
 const inputViewImageids = ['image1', 'image2', 'image3', 'image4'];
 const buttonId = 'FileOutput';
@@ -750,7 +771,8 @@ const pwId2 = 'pw2';
 const sigId2 = 'sig2';
 const sizeId2 = 'size2';
 const clearButtonId = 'FileClear';
-new FileBuilder(fileIds, inputViewImageids, buttonId, clearButtonId, pwId2, sigId2, sizeId2, view);
+const errorLogsFileId = 'errorLogsFile';
+new FileBuilder(fileIds, inputViewImageids, buttonId, clearButtonId, pwId2, sigId2, sizeId2, view, errorLogsFileId);
 const tweetUrlId = 'tweetUrl';
 const anckerId1 = 'ancker1';
 const anckerId2 = 'ancker2';

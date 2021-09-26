@@ -1,121 +1,136 @@
 <!DOCTYPE html>
 <html lang="ja">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
-        <link rel="stylesheet" type="text/css" href="main.css">
-		<script src="./qrcode.js"></script>
-		<!-- <script src="./QRcode.Origin.js"></script> -->
-		<title>TweetImagesAsFileConverter</title>
-	</head>
-	<body>
-        <div class="container">
-            <div class="header">
-                <h1>Tweet Images As File Converter </h1>
-            </div>
 
-            <div class="body">
-                <div class="tabhead">
-                    <div class="tab selected" id="toFile">To File</div> 
-                    <div class="tab" id="toImage">To Images</div> 
-                    <div class="tab" id="QRCode">QRCode</div> 
-                </div> 
-                <div class="tabbody">
-                    <div class="tb selected" id="toFileBody">
-                        <h2>To File<span class="passwd">pw:<input type="password" id="pw2"></span></h2>
-                        <div class="form">
-                            <div class="row">
-                                <a id="ancker2" href="#" target="_blank">Open Tweet Page to Get Images.</a>
-                            </div>
-                            <div class="row">
-                                <div class="item">
-                                    <div class="col title">source image1:</div>
-                                    <div class="col file"><input type="file" id="image1File" accept="image/png"/></div>
-                                    <div class="col"><img alt="image1"  id="image1"/></div>
-                                </div>
-                                <div class="item">
-                                    <div class="col title">source image2:</div>
-                                    <div class="col file"><input type="file" id="image2File" accept="image/png"/></div>
-                                    <div class="col"><img alt="image2" id="image2"/></div>
-                                </div>
-                                <div class="item">
-                                    <div class="col title">source image3:</div>
-                                    <div class="col file"><input type="file" id="image3File" accept="image/png"/></div>
-                                    <div class="col"><img alt="image3" id="image3"/></div>
-                                </div>
-                                <div class="item">
-                                    <div class="col title">source image4:</div>
-                                    <div class="col file"><input type="file" id="image4File" accept="image/png"/></div>
-                                    <div class="col"><img alt="image4" id="image4"/></div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col" id="FileClear"/><button >clear</button></div>
-                                <div class="col" id="FileOutput"/><button >convert To File</button></div>
-                                <div class="col sig">sig:<span id="sig2">-No Data-</span>b
-                                    /size:<span id="size2">-No Data-</span>bytes</div>
-                            </div>
-                        </div>
-                    </div> 
-                    <div class="tb" id="toImageBody">
-                        <h2>To Images<span class="passwd">pw:<input type="password" id="pw1"></span></h2>
-                        <div class="form">
-                            <div class="row">
-                                <div class="col input">File:<input type="file" id="FileInput"/></div>
-                                <div class="col size">size:<input type="number" id="sizeInput" min="10" max="1200" value="900" ste@="16">px 
-                                    /exp:<span id="sizeExpected">-No Data-</span>bytes</div>
-                                <div class="col sig">sig:<span id="sig1">-No Data-</span>b
-                                    /size:<span id="size1">-No Data-</span>bytes</div>
-                            </div>
-                            <div class="row">
-                                <div class="item">
-                                    <div class="col title">result image1:</div>
-                                    <div class="col dl"><img alt="result image1" id="image1result"/></div>
-                                </div>
-                                <div class="item">
-                                    <div class="col title">result image2:</div>
-                                    <div class="col dl"><img alt="result image2" id="image2result"/></div>
-                                </div>
-                                <div class="item">
-                                    <div class="col title">result image3:</div>
-                                    <div class="col dl"><img alt="result image3" id="image3result"/></div>
-                                </div>
-                                <div class="item">
-                                    <div class="col title">result image4:</div>
-                                    <div class="col dl"><img alt="result image4" id="image4result"/></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div> 
-                    <div class="tb" id="QRCodeBody">
-                        <h2>QRCode</h2>
-                        <div class="form">
-                            <div class="row">
-                                <div class="col url">TweetURL:<input type="input" id="tweetUrl"/></div>
-                            </div>
-                            <div class="row">
-                                <div class="col link">
-                                    <a id="ancker1" href="#" target="_blank">Open Tweet Page</a> to Get Images.
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col qrcode" id="qrcode">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col data" id="qrcodeData">
-                                </div>
-                            </div>
-                        </div>
-                    </div> 
-                </div> 
-            </div>
-            <div class="footer"></div>
-            <a class="dlLinkAncker" id="dlLinkAncker"></a>
-            <div class="loading" id="loading"><div class="indicator"></div></div>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script src="./qrcode.js"></script>
+    <!-- <script src="./QRcode.Origin.js"></script> -->
+    <title>TweetImagesAsFileConverter</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Tweet Images As File Converter </h1>
         </div>
-		<script src="./main.js"></script>
-		<script >
-        </script>
-	</body>
+
+        <div class="body">
+            <div class="tabhead">
+                <div class="tab selected" id="toFile">To File</div>
+                <div class="tab" id="toImage">To Images</div>
+                <div class="tab" id="QRCode">QRCode</div>
+            </div>
+            <div class="tabbody">
+                <div class="tb selected" id="toFileBody">
+                    <h2>To File<span class="passwd">pw:<input type="password" id="pw2"></span></h2>
+                    <div class="form">
+                        <div class="row">
+                            <a id="ancker2" href="#" target="_blank">Open Tweet Page to Get Images.</a>
+                        </div>
+                        <div class="row">
+                            <div class="item">
+                                <div class="col title">source image1:</div>
+                                <div class="col file"><input type="file" id="image1File" accept="image/png" /></div>
+                                <div class="col"><img alt="image1" id="image1" /></div>
+                            </div>
+                            <div class="item">
+                                <div class="col title">source image2:</div>
+                                <div class="col file"><input type="file" id="image2File" accept="image/png" /></div>
+                                <div class="col"><img alt="image2" id="image2" /></div>
+                            </div>
+                            <div class="item">
+                                <div class="col title">source image3:</div>
+                                <div class="col file"><input type="file" id="image3File" accept="image/png" /></div>
+                                <div class="col"><img alt="image3" id="image3" /></div>
+                            </div>
+                            <div class="item">
+                                <div class="col title">source image4:</div>
+                                <div class="col file"><input type="file" id="image4File" accept="image/png" /></div>
+                                <div class="col"><img alt="image4" id="image4" /></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col" id="FileClear" /><button>clear</button>
+                            <div class="col" id="FileOutput" /><button>convert To File</button>
+                        </div>
+                    </div>
+                    <div class="col sig">sig:<span id="sig2">-No Data-</span>b
+                        /size:<span id="size2">-No Data-</span>bytes</div>
+                </div>
+                <div class="row pre" id="errorLogsFile">
+                </div>
+            </div>
+        </div>
+        <div class="tb" id="toImageBody">
+            <h2>To Images<span class="passwd">pw:<input type="password" id="pw1"></span></h2>
+            <div class="form">
+                <div class="row">
+                    <div class="col input">File:<input type="file" id="FileInput" />
+                        <button id="redoButton">redo</button>
+                    </div>
+                    <div class="col size">size:<input type="number" id="sizeInput" min="10" max="1200" value="900"
+                            ste@="16">px
+                        /exp:<span id="sizeExpected">-No Data-</span>bytes</div>
+                    <div class="col sig">sig:<span id="sig1">-No Data-</span>b
+                        /size:<span id="size1">-No Data-</span>bytes</div>
+                </div>
+                <div class="row">
+                    <div class="item">
+                        <div class="col title">result image1:</div>
+                        <div class="col dl"><img alt="result image1" id="image1result" /></div>
+                    </div>
+                    <div class="item">
+                        <div class="col title">result image2:</div>
+                        <div class="col dl"><img alt="result image2" id="image2result" /></div>
+                    </div>
+                    <div class="item">
+                        <div class="col title">result image3:</div>
+                        <div class="col dl"><img alt="result image3" id="image3result" /></div>
+                    </div>
+                    <div class="item">
+                        <div class="col title">result image4:</div>
+                        <div class="col dl"><img alt="result image4" id="image4result" /></div>
+                    </div>
+                </div>
+                <div class="row pre" id="errorLogsImage">
+                </div>
+            </div>
+        </div>
+        <div class="tb" id="QRCodeBody">
+            <h2>QRCode</h2>
+            <div class="form">
+                <div class="row">
+                    <div class="col url">TweetURL:<input type="input" id="tweetUrl" /></div>
+                </div>
+                <div class="row">
+                    <div class="col link">
+                        <a id="ancker1" href="#" target="_blank">Open Tweet Page</a> to Get Images.
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col qrcode" id="qrcode">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col data" id="qrcodeData">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div class="footer"></div>
+    <a class="dlLinkAncker" id="dlLinkAncker"></a>
+    <div class="loading" id="loading">
+        <div class="indicator"></div>
+    </div>
+    </div>
+    <script src="./main.js"></script>
+    <script>
+    </script>
+</body>
+
 </html>
