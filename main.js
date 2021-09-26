@@ -501,7 +501,7 @@ class ImageBuilder {
 			const evt = event.type === 'change' ? event : this.lastEvent;
 			this.lastEvent = evt;
 			const logElm = v.gid(logElmId);
-			logElm.textContent = '';
+			logElm.textContent = window.createImageBitmap;
 			try {
 				await funcOnChange(evt);
 			} catch (e) {
