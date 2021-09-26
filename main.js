@@ -622,7 +622,7 @@ class FileBuilder {
 			logElm.textContent = '';
 			try {
 				const passwd = v.gid(pwId);
-				const result = await this.bfDL(passwd.value);
+				const result = await this.bfDL(passwd.value, logElm);
 				if (result) {
 					const sigElm = v.gid(sigId);
 					const sizeElm = v.gid(sizeId);
@@ -644,7 +644,7 @@ class FileBuilder {
 		});
 		this.clear();
 	}
-	async bfDL(passwd) {
+	async bfDL(passwd, logElm) {
 		const u8as = [];
 		for (let id of fileIds) {
 			const b64d = this.data[id];
@@ -666,7 +666,7 @@ class FileBuilder {
 			u8as.push(nU8a.subarray(3));
 		}
 		const u8a = Base64Util.joinU8as(u8as);
-		// const str = Base64Util.u8a2bs(u8a);
+		// const str2 = Base64Util.u8a2bs(u8a);
 		const str = td.decode(u8a);
 		const tokens = str.split(',');
 		if (tokens.length < 3) {
@@ -677,6 +677,7 @@ class FileBuilder {
 		const fnb64 = tokens[0];
 		const type = tokens[1];
 		const b64 = tokens[2];
+		logElm.textContent = b64;
 		const b64a = passwd ? Base64Util.u8a2b64(await Cryptor.decrypt(passwd, b64)) : b64;
 		if (!Base64Util.isB64(b64a)) {
 			console.log('str:' + str);
