@@ -349,17 +349,17 @@ class Cryptor {
 		return new Uint8Array(decryptedData);
 	}
 }
-if (!('createImageBitmap' in window)) {
-	window.createImageBitmap = async (blob) => {
-		return new Promise((resolve, reject) => {
-			let img = document.createElement('img');
-			img.addEventListener('load', () => {
-				resolve(this);
-			});
-			img.src = URL.createObjectURL(blob);
-		});
-	};
-}
+// if (!('createImageBitmap' in window)) {
+// 	window.createImageBitmap = async (blob) => {
+// 		return new Promise((resolve, reject) => {
+// 			let img = document.createElement('img');
+// 			img.addEventListener('load', () => {
+// 				resolve(this);
+// 			});
+// 			img.src = URL.createObjectURL(blob);
+// 		});
+// 	};
+// }
 const imgRe = /^image\/.+|application\/octet-stream/;
 class ImageProcessor {
 	constructor() {
@@ -502,7 +502,7 @@ class ImageBuilder {
 			const evt = event.type === 'change' ? event : this.lastEvent;
 			this.lastEvent = evt;
 			const logElm = v.gid(logElmId);
-			logElm.textContent = window.createImageBitmap;
+			logElm.textContent = '';
 			try {
 				await funcOnChange(evt);
 			} catch (e) {
