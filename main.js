@@ -349,7 +349,17 @@ class Cryptor {
 		return new Uint8Array(decryptedData);
 	}
 }
-
+if (!('createImageBitmap' in window)) {
+	window.createImageBitmap = async (blob) => {
+		return new Promise((resolve, reject) => {
+			let img = document.createElement('img');
+			img.addEventListener('load', () => {
+				resolve(this);
+			});
+			img.src = URL.createObjectURL(blob);
+		});
+	};
+}
 const imgRe = /^image\/.+|application\/octet-stream/;
 class ImageProcessor {
 	constructor() {
@@ -372,7 +382,7 @@ class ImageProcessor {
 		}
 		this.ctx.clearRect(0, 0, w, h);
 		const newOne1 = this.ctx.getImageData(0, 0, w, h);
-		this.ctx.drawImage(await createImageBitmap(newPaperData), 0, 0);
+		this.ctx.drawImage(await window.createImageBitmap(newPaperData), 0, 0);
 		const newOne = this.ctx.getImageData(0, 0, w, h);
 		let dataUri = this.canvas.toDataURL();
 		newPaperData = undefined;
