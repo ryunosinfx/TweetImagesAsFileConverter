@@ -401,8 +401,8 @@ class ImageProcessor {
 				this.ctx.clearRect(0, 0, w, h);
 				this.ctx.drawImage(imgElm, 0, 0);
 				const idata = this.ctx.getImageData(0, 0, w, h);
-				logElm.textContent = logElm.textContent + '\n' + `loadAbFromPngDataUri 01 w:${w}/h:${h} ${idata} `;
 				const ab = idata.data.buffer;
+				logElm.textContent = logElm.textContent + '\n' + `loadAbFromPngDataUri 01 w:${w}/h:${h} ${idata} ${ab.byteLength} `;
 				resolve(ab);
 				this.ctx.clearRect(0, 0, w, h);
 				imgElm.onload = null;
@@ -665,13 +665,13 @@ class FileBuilder {
 			const nU8a = new Uint8Array(nlen);
 			const a = [];
 			for (let i = 4; i < len; i++) {
+				const byte = u8a[i];
+				a.push(byte);
 				if (i % 4 === 3) {
 					continue;
 				}
 				const k = i - Math.floor(i / 4);
-				const byte = u8a[i];
 				nU8a[k] = byte;
-				a.push(byte);
 			}
 			const str = td.decode(nU8a);
 			const as = a.join(',');
