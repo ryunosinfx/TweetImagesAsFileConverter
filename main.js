@@ -602,6 +602,7 @@ class FileBuilder {
 		this.imageids = imageids;
 		this.fileIds = fileIds;
 		this.isLoading = false;
+		this.logElm = v.gid(logElmId);
 
 		for (let i = 0; i < fileIds.length; i++) {
 			const id = fileIds[i];
@@ -618,21 +619,24 @@ class FileBuilder {
 		}
 		v.ael(buttonId, 'click', async (event) => {
 			view.showLoadling();
-			const logElm = v.gid(logElmId);
-			logElm.textContent = '';
+			this.logElm.textContent = '';
 			try {
 				const passwd = v.gid(pwId);
-				const result = await this.bfDL(passwd.value, logElm);
+				this.logElm.textContent = this.logElm.textContent + '\n' + '01';
+				const result = await this.bfDL(passwd.value, this.logElm);
 				if (result) {
+					this.logElm.textContent = this.logElm.textContent + '\n' + '02';
 					const sigElm = v.gid(sigId);
 					const sizeElm = v.gid(sizeId);
+					this.logElm.textContent = this.logElm.textContent + '\n' + '03';
 					sigElm.textContent = await Base64Util.sig(result);
+					this.logElm.textContent = this.logElm.textContent + '\n' + '04';
 					sizeElm.textContent = result.length.toLocaleString();
 				}
 			} catch (e) {
 				console.error(e);
 				console.log(e.stack);
-				logElm.textContent = e ? e + ' \n' + e.stack : e;
+				this.logElm.textContent = e ? e + ' \n' + e.stack : e;
 			}
 			const passwd = v.gid(pwId);
 			view.heideLoading();
@@ -646,6 +650,7 @@ class FileBuilder {
 	}
 	async bfDL(passwd, logElm) {
 		const u8as = [];
+		logElm.textContent = logElm.textContent + '\n' + 'bfDL 01';
 		for (let id of fileIds) {
 			const b64d = this.data[id];
 			if (!b64d) {
@@ -665,19 +670,25 @@ class FileBuilder {
 			}
 			u8as.push(nU8a.subarray(3));
 		}
+		logElm.textContent = logElm.textContent + '\n' + 'bfDL 02';
 		const u8a = Base64Util.joinU8as(u8as);
 		// const str2 = Base64Util.u8a2bs(u8a);
+		logElm.textContent = logElm.textContent + '\n' + 'bfDL 03';
 		const str = td.decode(u8a);
+		logElm.textContent = logElm.textContent + '\n' + 'bfDL 04';
 		const tokens = str.split(',');
 		if (tokens.length < 3) {
 			console.log('str:' + str);
 			alert('invalid data! Empty!');
 			return null;
 		}
+		logElm.textContent = logElm.textContent + '\n' + 'bfDL 05';
 		const fnb64 = tokens[0];
 		const type = tokens[1];
 		const b64 = tokens[2];
-		logElm.textContent = b64;
+
+		logElm.textContent = logElm.textContent + '\n' + 'bfDL 06';
+		logElm.textContent = logElm.textContent + '\n' + b64;
 		const b64a = passwd ? Base64Util.u8a2b64(await Cryptor.decrypt(passwd, b64)) : b64;
 		if (!Base64Util.isB64(b64a)) {
 			console.log('str:' + str);
