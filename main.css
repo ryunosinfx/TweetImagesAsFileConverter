@@ -238,5 +238,9 @@ div.row.pre {
     font-family: monospace;
     white-space: pre;
 	padding:5px;
+}
+div.row.pre2 {
+    display: block;
+	padding:5px;
 	word-break: break-all;
 }
