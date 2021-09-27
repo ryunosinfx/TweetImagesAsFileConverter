@@ -391,7 +391,7 @@ class ImageProcessor {
 		return dataUri;
 	}
 	loadAbFromPngDataUri(dUri, logElm) {
-		return new Promise((resolve, reject) => {
+		return new Promise(async (resolve, reject) => {
 			let imgElm = new Image();
 			imgElm.onload = async () => {
 				const w = imgElm.naturalWidth;
@@ -410,6 +410,8 @@ class ImageProcessor {
 				imgElm.src = null;
 				imgElm = null;
 			};
+			const hash = await Base64Util.sig(Base64Util.dataURI2u8a(dUri));
+			logElm.textContent = logElm.textContent + '\n' + `loadAbFromPngDataUri 00 hash:${hash} `;
 			imgElm.src = dUri;
 			imgElm.onerror = (e) => {
 				console.log('失敗');
