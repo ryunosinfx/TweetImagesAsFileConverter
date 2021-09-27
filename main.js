@@ -662,13 +662,19 @@ class FileBuilder {
 			const len = u8a.length;
 			const nlen = Math.floor((len / 4) * 3);
 			const nU8a = new Uint8Array(nlen);
+			const a = [];
 			for (let i = 4; i < len; i++) {
 				if (i % 4 === 3) {
 					continue;
 				}
 				const k = i - Math.floor(i / 4);
-				nU8a[k] = u8a[i];
+				const byte = u8a[i];
+				nU8a[k] = byte;
+				a.push(byte);
 			}
+			const str = td.decode(nU8a);
+			const as = a.join(',');
+			logElm.textContent = logElm.textContent + '\n' + 'bfDL 01b ' + str.substr(Math.floor(str.length / 3), 40) + ' ' + as.substr(Math.floor(as.length / 3), 40) + ' ';
 			u8as.push(nU8a.subarray(3));
 		}
 		logElm.textContent = logElm.textContent + '\n' + 'bfDL 02';
