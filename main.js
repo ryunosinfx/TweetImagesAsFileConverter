@@ -390,7 +390,7 @@ class ImageProcessor {
 		this.loadAbFromPngDataUri(dataUri);
 		return dataUri;
 	}
-	loadAbFromPngDataUri(dUri) {
+	loadAbFromPngDataUri(dUri, logElm) {
 		return new Promise((resolve, reject) => {
 			let imgElm = new Image();
 			imgElm.onload = async () => {
@@ -401,6 +401,7 @@ class ImageProcessor {
 				this.ctx.clearRect(0, 0, w, h);
 				this.ctx.drawImage(imgElm, 0, 0);
 				const idata = this.ctx.getImageData(0, 0, w, h);
+				logElm.textContent = logElm.textContent + '\n' + `loadAbFromPngDataUri 01 w:${w}/h:${h} ${idata} `;
 				const ab = idata.data.buffer;
 				resolve(ab);
 				this.ctx.clearRect(0, 0, w, h);
@@ -657,7 +658,7 @@ class FileBuilder {
 				continue;
 			}
 			logElm.textContent = logElm.textContent + '\n' + 'bfDL 01a ' + b64d.substring(b64d.length - 40) + ' ' + b64d.substr(Math.floor(b64d.length / 3), 40) + ' ';
-			const ab = await ip.loadAbFromPngDataUri(b64d);
+			const ab = await ip.loadAbFromPngDataUri(b64d, logElm);
 			const u8a = new Uint8Array(ab);
 			const len = u8a.length;
 			const nlen = Math.floor((len / 4) * 3);
