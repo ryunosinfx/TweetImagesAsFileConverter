@@ -674,7 +674,7 @@ class FileBuilder {
 			}
 			const str = td.decode(nU8a);
 			const as = a.join(',');
-			logElm.textContent = logElm.textContent + '\n' + 'bfDL 01b ' + str.substr(Math.floor(str.length / 3), 40) + ' ' + as.substr(Math.floor(as.length / 3), 40) + ' ';
+			logElm.textContent = logElm.textContent + '\n' + 'bfDL 01b ' + str.substr(Math.floor(0 / 3), 40) + ' ' + as.substr(Math.floor(0 / 3), 40) + ' ';
 			u8as.push(nU8a.subarray(3));
 		}
 		logElm.textContent = logElm.textContent + '\n' + 'bfDL 02';
