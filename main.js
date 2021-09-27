@@ -656,6 +656,7 @@ class FileBuilder {
 			if (!b64d) {
 				continue;
 			}
+			logElm.textContent = logElm.textContent + '\n' + 'bfDL 01a ' + b64d.substring(b64d.length - 40) + ' ';
 			const ab = await ip.loadAbFromPngDataUri(b64d);
 			const u8a = new Uint8Array(ab);
 			const len = u8a.length;
@@ -688,15 +689,17 @@ class FileBuilder {
 		const b64 = tokens[2];
 
 		logElm.textContent = logElm.textContent + '\n' + 'bfDL 06';
-		logElm.textContent = logElm.textContent + '\n' + b64;
+		// logElm.textContent = logElm.textContent + '\n' + b64;
 		const b64a = passwd ? Base64Util.u8a2b64(await Cryptor.decrypt(passwd, b64)) : b64;
 		if (!Base64Util.isB64(b64a)) {
 			console.log('str:' + str);
 			alert('invalid data! Crypted Data!');
 			return null;
 		}
+		logElm.textContent = logElm.textContent + '\n' + 'bfDL 07';
 		const dataUri = type + ',' + b64a;
 		const fileName = Base64Util.from64(fnb64);
+		logElm.textContent = logElm.textContent + '\n' + 'bfDL 08';
 		FL.dl(fileName, dataUri, null, true);
 		return Base64Util.b64ToU8a(b64a);
 	}
