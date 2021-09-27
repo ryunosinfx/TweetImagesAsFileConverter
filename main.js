@@ -656,7 +656,7 @@ class FileBuilder {
 			if (!b64d) {
 				continue;
 			}
-			logElm.textContent = logElm.textContent + '\n' + 'bfDL 01a ' + b64d.substring(b64d.length - 40) + ' ';
+			logElm.textContent = logElm.textContent + '\n' + 'bfDL 01a ' + b64d.substring(b64d.length - 40) + ' ' + b64d.substr(Math.floor(b64d.length / 3), 40) + ' ';
 			const ab = await ip.loadAbFromPngDataUri(b64d);
 			const u8a = new Uint8Array(ab);
 			const len = u8a.length;
