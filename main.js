@@ -196,7 +196,7 @@ class Base64Util {
 	}
 	static u8a2bs(u8a) {
 		const r = [];
-		for (let e of u8a) {
+		for (const e of u8a) {
 			r.push(String.fromCharCode(e));
 		}
 		return r.join('');
@@ -287,6 +287,26 @@ class Base64Util {
 		const bs = Base64Util.u8a2bs(u8a);
 		return Hasher.sha256(bs, 1, 'hex');
 	}
+	static makeCRCTable() {
+		const crcTable = [];
+		for (let n = 0; n < 256; n++) {
+			let c = n;
+			for (let k = 0; k < 8; k++) {
+				c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+			}
+			crcTable[n] = c;
+		}
+		return crcTable;
+	}
+	static crc32(str) {
+		const crcTable = Base64Util.makeCRCTable();
+		let crc = 0 ^ -1;
+		const len = str.length;
+		for (let i = 0; i < len; i++) {
+			crc = (crc >>> 8) ^ crcTable[(crc ^ str.charCodeAt(i)) & 0xff];
+		}
+		return (crc ^ -1) >>> 0;
+	}
 }
 const STHC = 10000;
 class Cryptor {
@@ -368,8 +388,9 @@ class ImageProcessor {
 		window.onload = () => {
 			v.ab(this.canvas);
 		};
+		this.pngChunk = this.getPngChunk('sRGB', '\x00') + '$1';
 	}
-	async getUriFomBMD(iamgeBitmapData) {
+	async getUriFomBMD(iamgeBitmapData, logElm) {
 		const w = Math.floor(iamgeBitmapData.width);
 		const h = Math.floor(iamgeBitmapData.height);
 		this.canvas.setAttribute('width', w);
@@ -387,8 +408,36 @@ class ImageProcessor {
 		const newOne = this.ctx.getImageData(0, 0, w, h);
 		let dataUri = this.canvas.toDataURL();
 		newPaperData = undefined;
-		this.loadAbFromPngDataUri(dataUri);
+		this.loadAbFromPngDataUri(dataUri, logElm);
 		return dataUri;
+	}
+	addsRGBProfile(dataUri) {
+		const [head, b64] = dataUri.split(',');
+		const png = atob(b64);
+		// sRGB with Perceptual (0) rendering intent
+		const pngChunkAdded = png.replace(/(....IDAT)/, this.pngChunk);
+		return head + ',' + btoa(pngChunkAdded);
+	}
+	getPngChunk(type, data) {
+		const LEN_LENGTH = 4;
+		const LEN_TYPE = 4;
+		const LEN_CRC = 4;
+		const lenData = data.length;
+		const ab = new ArrayBuffer(LEN_LENGTH + LEN_TYPE + lenData + LEN_CRC);
+		const view = new DataView(ab);
+
+		let pos = LEN_LENGTH;
+		view.setUint32(0, lenData);
+		const lenType = type.length;
+		for (let i = 0; i < lenType; i++) {
+			view.setUint8(pos++, type.charCodeAt(i));
+		}
+		for (let i = 0; i < lenData; i++) {
+			view.setUint8(pos++, data.charCodeAt(i));
+		}
+		const crc = Base64Util.crc32(type + data);
+		view.setUint32(pos, crc);
+		return Base64Util.ab2bs(ab);
 	}
 	loadAbFromPngDataUri(dUri, logElm) {
 		return new Promise(async (resolve, reject) => {
@@ -473,6 +522,7 @@ class ImageBuilder {
 		this.isLoading = false;
 		const inputSize = v.gid(sizeInputId);
 		const redoBtnElm = v.gid(redoBtnId);
+		const logElm = v.gid(logElmId);
 		inputSize.value = 900;
 		const sizeFunc = (event) => {
 			const inputSize = event.target;
@@ -497,14 +547,13 @@ class ImageBuilder {
 					sigElm.textContent = await Base64Util.sig(u8a);
 					sizeElm.textContent = u8a.length.toLocaleString();
 				}
-				await this.f2is(fileId, imageids, file.name, inputSize.value, passwd.value);
+				await this.f2is(fileId, imageids, file.name, inputSize.value, passwd.value, logElm);
 			}
 			view.heideLoading();
 		};
 		const funcWrapped = async (event) => {
 			const evt = event.type === 'change' ? event : this.lastEvent;
 			this.lastEvent = evt;
-			const logElm = v.gid(logElmId);
 			logElm.textContent = '';
 			try {
 				await funcOnChange(evt);
@@ -536,7 +585,7 @@ class ImageBuilder {
 			imgElm.src = '';
 		}
 	}
-	async f2is(fileId, imageids, fileName, size, passwd) {
+	async f2is(fileId, imageids, fileName, size, passwd, logElm) {
 		const MaxPixcelParImg = isNaN((size + '') * 1) ? 900 : size * 1;
 		const MAX_bytes4 = MaxPixcelParImg * MaxPixcelParImg * 4;
 		const MAX_bytes3 = MaxPixcelParImg * MaxPixcelParImg * 3;
@@ -590,7 +639,7 @@ class ImageBuilder {
 					a[j] = te.encode(char);
 				}
 			}
-			promises.push(ip.getUriFomBMD({ data: a, width: MaxPixcelParImg, height: MaxPixcelParImg }));
+			promises.push(ip.getUriFomBMD({ data: a, width: MaxPixcelParImg, height: MaxPixcelParImg }, logElm));
 		}
 		const results = await Promise.all(promises);
 		for (let duri of results) {
