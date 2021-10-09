@@ -98,11 +98,17 @@ div.tabbody .tb .form div.row {
 	width: 40vw;
 }
 .col.input {
+	display: flex;
 	width: calc(100vw - 2em);
+	justify-content: center;
 }
+.col.input>span {
+	display: block;
+}
+
 .col.input input {
-	width: calc(100vw - 2em);
-	max-width: calc(100vw - 5em);
+	width: calc(33vw - 2em);
+	max-width: calc(33vw - 2em);
 }
 .col.size input {
 	display: inline-block;
@@ -243,4 +249,8 @@ div.row.pre2 {
     display: block;
 	padding:5px;
 	word-break: break-all;
+}
+input.size{
+	font-size: 1.5em;
+	line-height: 1.5em;
 }

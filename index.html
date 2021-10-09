@@ -68,11 +68,13 @@
             <h2>To Images<span class="passwd">pw:<input type="password" id="pw1"></span></h2>
             <div class="form">
                 <div class="row">
-                    <div class="col input">File:<input type="file" id="FileInput" />
-                        <button id="redoButton">redo</button>
+                    <div class="col input">
+                        <span>File:<input type="file" id="FileInput" /></span>
+                        <span><button id="redoButton">redo</button></span>
+                        <span><input type="checkbox" id="isGrascale" /><label for="isGrascale">GrayScale?</label></span>
                     </div>
                     <div class="col size">size:<input type="number" id="sizeInput" min="10" max="1200" value="900"
-                            ste@="16">px
+                            class="size" ste@="16">px
                         /exp:<span id="sizeExpected">-No Data-</span>bytes</div>
                     <div class="col sig">sig:<span id="sig1">-No Data-</span>b
                         /size:<span id="size1">-No Data-</span>bytes</div>
